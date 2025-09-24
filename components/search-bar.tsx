@@ -1,5 +1,6 @@
 "use client"
 
+import { GeoResult } from "@/lib/definitions";
 import { useDebounced } from "@/lib/hooks";
 import { mockGeocode } from "@/lib/mock-data";
 import { cls } from "@/lib/ui"
@@ -8,21 +9,34 @@ import { useEffect, useState } from "react";
 
 export default function SearchBar() {
     const [query, setQuery] = useState("");
+    const [results, setResults] = useState<GeoResult[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const debounced = useDebounced(query, 300);
 
     useEffect(() => {
         let cancelled = false;
         const q = debounced.trim();
-        if(!q) return;
+        if(!q) {
+            setResults([]);
+            setLoading(false);
+            setError(null);
+            return;
+        }
+        setLoading(true);
+        setError(null);
 
         (async () => {
             console.log("[geocode:start]", q);
             try {
                 const results = await mockGeocode(q);
-                if(!cancelled) console.log("[geocode:results]", results);
+                if(!cancelled) setResults(results);
             } catch (error) {
-                if(!cancelled) console.error("[geocode:error]", error);
+                if(!cancelled) setError("Search failed. Please try again.");
+            } finally {
+                if(!cancelled) setLoading(false);
             }
+
         })();
 
         return () => { cancelled = true; };
@@ -41,6 +55,32 @@ export default function SearchBar() {
                 )}
                 autoComplete="off"
             />
+            {(loading || results.length > 0 || error) && (
+                <div className="absolute z-10 mt-2 w-full rounded-xl border bg-white shadow-lg overflow-hidden">
+                    {loading && (
+                        <div className="p-3 text-sm text-gray-600">Searching...</div>
+                    )}
+                    {error && (
+                        <div className="p-3 text-sm text-rose-600">{error}</div>
+                    )}
+                    {!loading && !error && results.map((c) => (
+                        <button
+                            key={c.id}
+                            onClick={() => alert(`${c.name} (${c.lat.toFixed(2)}, ${c.lon.toFixed(2)})`)}
+                            className="w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-sky-50"
+                        >
+                            <span className="text-sm font-medium">{c.name}</span>
+                            {c.country && <span className="text-xs text-gray-500">{c.country}</span>}
+                            <span className="ml-auto text-xs text-gray-400">
+                                {c.lat.toFixed(2)}, {c.lon.toFixed(2)}
+                            </span>
+                        </button>
+                    ))}
+                    {!loading && !error && results.length === 0 && debounced && (
+                        <div className="p-3 text-sm text-gray-600">No matches found</div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
