@@ -7,13 +7,14 @@ import { cls } from "@/lib/ui"
 import { Search } from "lucide-react"
 import { useEffect, useState } from "react";
 
-export default function SearchBar() {
+export default function SearchBar({ onSelect }: { onSelect?: (c: GeoResult) => void }) {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<GeoResult[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [activeIdx, setActiveIdx] = useState<number>(-1);
     const debounced = useDebounced(query, 300);
+    const select = (c: GeoResult) => onSelect ? onSelect(c) : alert(`${c.name} ...`);
 
     useEffect(() => {
         setActiveIdx(results.length ? 0 : -1);
@@ -30,7 +31,7 @@ export default function SearchBar() {
         } else if(e.key === "Enter" && activeIdx >= 0) {
             e.preventDefault();
             const c = results[activeIdx];
-            alert(`${c.name} (${c.lat.toFixed(2)}, ${c.lon.toFixed(2)})`);
+            select(c);
         }
     }
 
@@ -87,7 +88,7 @@ export default function SearchBar() {
                     {!loading && !error && results.map((c, i) => (
                         <button
                             key={c.id}
-                            onClick={() => alert(`${c.name} (${c.lat.toFixed(2)}, ${c.lon.toFixed(2)})`)}
+                            onClick={() => select(c)}
                             className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-sky-50 ${i === activeIdx ? "bg-sky-50" : ""}`}
                         >
                             <span className="text-sm font-medium">{c.name}</span>
