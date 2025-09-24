@@ -12,7 +12,27 @@ export default function SearchBar() {
     const [results, setResults] = useState<GeoResult[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [activeIdx, setActiveIdx] = useState<number>(-1);
     const debounced = useDebounced(query, 300);
+
+    useEffect(() => {
+        setActiveIdx(results.length ? 0 : -1);
+    }, [results.length])
+
+    function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+        if(!results.length) return;
+        if(e.key === "ArrowDown") {
+            e.preventDefault();
+            setActiveIdx((i) => (i + 1) % results.length);
+        } else if(e.key === "ArrowUp") {
+            e.preventDefault();
+            setActiveIdx((i) => (i - 1 + results.length) % results.length);
+        } else if(e.key === "Enter" && activeIdx >= 0) {
+            e.preventDefault();
+            const c = results[activeIdx];
+            alert(`${c.name} (${c.lat.toFixed(2)}, ${c.lon.toFixed(2)})`);
+        }
+    }
 
     useEffect(() => {
         let cancelled = false;
@@ -54,6 +74,7 @@ export default function SearchBar() {
                     "focus:ring-2 focus:ring-sky-400/50 focus:border-sky-400"
                 )}
                 autoComplete="off"
+                onKeyDown={onKeyDown}
             />
             {(loading || results.length > 0 || error) && (
                 <div className="absolute z-10 mt-2 w-full rounded-xl border bg-white shadow-lg overflow-hidden">
@@ -63,11 +84,11 @@ export default function SearchBar() {
                     {error && (
                         <div className="p-3 text-sm text-rose-600">{error}</div>
                     )}
-                    {!loading && !error && results.map((c) => (
+                    {!loading && !error && results.map((c, i) => (
                         <button
                             key={c.id}
                             onClick={() => alert(`${c.name} (${c.lat.toFixed(2)}, ${c.lon.toFixed(2)})`)}
-                            className="w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-sky-50"
+                            className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-sky-50 ${i === activeIdx ? "bg-sky-50" : ""}`}
                         >
                             <span className="text-sm font-medium">{c.name}</span>
                             {c.country && <span className="text-xs text-gray-500">{c.country}</span>}
