@@ -33,5 +33,4 @@ export default function CityPage() {
             </main>
         </div>
     )
-    return null;
 }
