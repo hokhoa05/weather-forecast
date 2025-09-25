@@ -1,7 +1,15 @@
 'use client';
 
+import DailyGrid from "@/components/daily-grid";
+import ErrorState from "@/components/error-state";
+import HourlyStrip from "@/components/hourly-strip";
+import NowCard from "@/components/now-card";
+import { SkeletonBlock } from "@/components/skeletons";
+import { Forecast } from "@/lib/definitions";
 import { formatTemp, formatWind, Units } from "@/lib/format";
+import { fetchMockForecast } from "@/lib/weather";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function CityPage() {
     const sp = useSearchParams();
@@ -14,26 +22,54 @@ export default function CityPage() {
 
     const valid = Number.isFinite(latNum) && Number.isFinite(lonNum);
 
-    const demoTempC = 31.4;
-    const demoWindKph = 12.8;
+    const [data, setData] = useState<Forecast | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        if(!valid) {
+            setError("Invalid or missing coordinates.");
+            setLoading(false);
+            return;
+        }
+        let cancelled = false;
+        setLoading(true);
+        setError(null);
+        fetchMockForecast(latNum, lonNum, name)
+            .then(f => {
+                if(!cancelled) setData(f);
+            })
+            .catch(e => {
+                if(!cancelled) setError(e?.message || "Failed to load forecast.");
+            })
+            .finally(() => {
+                if(!cancelled) setLoading(false);
+            })
+        return () => {cancelled = true;};
+    }, [latNum, lonNum, name, valid]);
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white">
             <main className="mx-auto max-w-3xl px-4 py-8">
                 <h1 className="text-2xl font-semibold mb-2">Forecast: {name}</h1>
-                {!valid ? (
-                    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
-                        Missing or invalid coordinates. Go back and select a city from the Home page.
-                    </div>
-                ) : (
-                    <div className="mt-6 rounded-2xl border bg-white p-6 shadow-sm">
-                        <p>Ready to fetch forecast for {name} @ {latNum.toFixed(4)}, {lonNum.toFixed(4)} • Units: {units}</p>
-                    </div>
+                
+                {loading && (
+                    <>
+                        <SkeletonBlock h={120}/>
+                        <SkeletonBlock h={140} mt={5}/>
+                        <SkeletonBlock h={220} mt={5}/>
+                    </>
                 )}
-                <div className="mt-6 rounded-2xl border bg-white p-6 shadow-sm space-y-2">
-                    <div>Temp now: <strong>{formatTemp(demoTempC, units)}</strong></div>
-                    <div>Wind: <strong>{formatWind(demoWindKph, units)}</strong></div>
-                    <p className="text-xs text-gray-500">(Demo values; will be replaced by API data.)</p>
-                </div>
+
+                {!loading && error && <ErrorState msg={error}/>}
+
+                {!loading && !error && data && (
+                    <>
+                        <NowCard cur={data.current} units={units} tz={data.location.tz}/>
+                        <HourlyStrip hours={data.hourly} units={units} tz={data.location.tz}/>
+                        <DailyGrid days={data.daily} units={units} tz={data.location.tz} />
+                    </>
+                )}
             </main>
         </div>
     )
