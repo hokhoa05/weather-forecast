@@ -1,5 +1,6 @@
 'use client';
 
+import { formatTemp, formatWind, Units } from "@/lib/format";
 import { useSearchParams } from "next/navigation";
 
 export default function CityPage() {
@@ -9,9 +10,12 @@ export default function CityPage() {
     const lon = sp.get('lon');
     const latNum = Number(lat);
     const lonNum = Number(lon);
+    const units = (sp.get("units") === "imperial" ? "imperial" : "metric") as Units;
 
     const valid = Number.isFinite(latNum) && Number.isFinite(lonNum);
 
+    const demoTempC = 31.4;
+    const demoWindKph = 12.8;
     return (
         <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white">
             <main className="mx-auto max-w-3xl px-4 py-8">
@@ -22,13 +26,13 @@ export default function CityPage() {
                     </div>
                 ) : (
                     <div className="mt-6 rounded-2xl border bg-white p-6 shadow-sm">
-                        <p>Ready to fetch forecast for {name} @ {latNum.toFixed(4)}, {lonNum.toFixed(4)}</p>
+                        <p>Ready to fetch forecast for {name} @ {latNum.toFixed(4)}, {lonNum.toFixed(4)} • Units: {units}</p>
                     </div>
                 )}
-                <div className="mt-6 rounded-2xl border bg-white p-6 shadow-sm">
-                    <p className="text-gray-700">
-                        (Stub) Here we will fetch your forecast later using these query params.
-                    </p>
+                <div className="mt-6 rounded-2xl border bg-white p-6 shadow-sm space-y-2">
+                    <div>Temp now: <strong>{formatTemp(demoTempC, units)}</strong></div>
+                    <div>Wind: <strong>{formatWind(demoWindKph, units)}</strong></div>
+                    <p className="text-xs text-gray-500">(Demo values; will be replaced by API data.)</p>
                 </div>
             </main>
         </div>

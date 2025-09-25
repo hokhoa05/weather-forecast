@@ -2,23 +2,46 @@
 
 import RecentChips from "@/components/recent-chips";
 import SearchBar from "@/components/search-bar";
+import UnitToggle from "@/components/unit-toggle";
 import { GeoResult } from "@/lib/definitions";
+import { Units } from "@/lib/format";
+import { readUnitsPref, writeUnitsPref } from "@/lib/prefs";
 import { readRecent, removeRecent, upsertRecent } from "@/lib/storage";
 import { Clock, Locate, MapPin } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [geoError, setGeoError] = useState<string | null>(null);
   const router = useRouter();
+  const sp = useSearchParams();
   const [recent, setRecent] = useState<GeoResult[]>([]);
-  
+  const units = (sp.get("units") === "imperial" ? "imperial" : "metric") as Units;
+
   useEffect(() => { setRecent(readRecent()); }, []); 
+
+  useEffect(() => {
+    const current = new URL(window.location.href);
+    if(!current.searchParams.get("units")) {
+      const saved = readUnitsPref();
+      if(saved) {
+        current.searchParams.set("units", saved);
+        router.replace(current.pathname + current.search);
+      }
+    }
+  }, [router]);
+
+  function setUnits(u: Units) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("units", u);
+    writeUnitsPref(u);
+    router.push(url.pathname + url.search);
+  }
 
   function handleSelect(city: GeoResult) {
     const next = upsertRecent(city);
     setRecent(next);
-    router.push(`/city?lat=${city.lat}&lon=${city.lon}&name=${encodeURIComponent(city.name)}`);
+    router.push(`/city?lat=${city.lat}&lon=${city.lon}&name=${encodeURIComponent(city.name)}&units=${units}`);
   }
 
   function handleRemove(id: string) {
@@ -42,7 +65,7 @@ export default function HomePage() {
         };
         const next = upsertRecent(city);
         setRecent(next);
-        router.push(`/city?lat=${lat}&lon=${lon}&name=${encodeURIComponent("My location")}`);
+        router.push(`/city?lat=${lat}&lon=${lon}&name=${encodeURIComponent("My location")}&units=${units}`);
       },
       (err) => {
         setGeoError(err.message || "Unable to get your location.");
@@ -61,6 +84,9 @@ export default function HomePage() {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-8">
+        <div className="mb-3 flex items-center gap-2 justify-end">
+          <UnitToggle value={units} onChange={setUnits}/>
+        </div>
         <div className="rounded-2xl border bg-white shadow-sm p-4 sm:p-6">
           <label className="block text-sm font-medium mb-2">Search a city</label>
           <div className="flex items-center gap-2">
