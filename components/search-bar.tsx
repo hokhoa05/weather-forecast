@@ -1,8 +1,8 @@
 "use client"
 
 import { GeoResult } from "@/lib/definitions";
+import { fetchGeocode } from "@/lib/geocode/api";
 import { useDebounced } from "@/lib/hooks";
-import { mockGeocode } from "@/lib/mock-data";
 import { cls } from "@/lib/ui"
 import { Search } from "lucide-react"
 import { useEffect, useState } from "react";
@@ -50,7 +50,7 @@ export default function SearchBar({ onSelect }: { onSelect?: (c: GeoResult) => v
         (async () => {
             console.log("[geocode:start]", q);
             try {
-                const results = await mockGeocode(q);
+                const results = await fetchGeocode(q, 6);
                 if(!cancelled) setResults(results);
             } catch (error) {
                 if(!cancelled) setError("Search failed. Please try again.");

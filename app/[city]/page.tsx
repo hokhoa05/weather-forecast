@@ -6,8 +6,8 @@ import HourlyStrip from "@/components/hourly-strip";
 import NowCard from "@/components/now-card";
 import { SkeletonBlock } from "@/components/skeletons";
 import { Forecast } from "@/lib/definitions";
-import { formatTemp, formatWind, Units } from "@/lib/format";
-import { fetchForecast, fetchMockForecast } from "@/lib/weather";
+import { Units } from "@/lib/format";
+import { fetchForecast } from "@/lib/weather";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
