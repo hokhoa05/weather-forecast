@@ -48,3 +48,14 @@ export async function fetchMockForecast(lat: number, lon: number, name="Unknown"
         daily,
     };
 }
+
+export async function fetchForecast(lat: number, lon: number, name="Unknown") : Promise<Forecast> {
+    const u = new URL("api/forecast", window.location.origin);
+    u.searchParams.set("lat", String(lat));
+    u.searchParams.set("lon", String(lon));
+    u.searchParams.set("name", name);
+
+    const res = await fetch(u.toString(), {cache: "force-cache"});
+    if(!res.ok) throw new Error(`Forecast failed: ${res.status}`);
+    return res.json() as Promise<Forecast>;
+}

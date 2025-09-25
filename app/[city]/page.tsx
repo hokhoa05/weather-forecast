@@ -7,7 +7,7 @@ import NowCard from "@/components/now-card";
 import { SkeletonBlock } from "@/components/skeletons";
 import { Forecast } from "@/lib/definitions";
 import { formatTemp, formatWind, Units } from "@/lib/format";
-import { fetchMockForecast } from "@/lib/weather";
+import { fetchForecast, fetchMockForecast } from "@/lib/weather";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -35,7 +35,7 @@ export default function CityPage() {
         let cancelled = false;
         setLoading(true);
         setError(null);
-        fetchMockForecast(latNum, lonNum, name)
+        fetchForecast(latNum, lonNum, name)
             .then(f => {
                 if(!cancelled) setData(f);
             })

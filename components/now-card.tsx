@@ -10,6 +10,11 @@ export default function NowCard({cur, units, tz}: {
 }) {
     return (
         <div className="rounded-2xl border bg-white p-5 shadow-sm">
+            <img
+                src={`/weather/${cur.icon}.svg`}
+                alt={cur.summary}
+                className="h-12 w-12"
+            />
             <div className="flex items-baseline gap-3">
                 <div className="text-4xl font-semibold">{formatTemp(cur.temp, units)}</div>
                 <div className="text-gray-500">{cur.summary}</div>
