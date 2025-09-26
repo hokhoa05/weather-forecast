@@ -21,7 +21,8 @@ export async function GET(req: Request) {
                 "Cache-Control": `public, s-maxage=${revalidate}, stale-while-revalidate=60`
             }
         })
-    } catch (e: any) {
-        return NextResponse.json({error: e?.message ?? "Upstream error"}, {status: 502});
+    } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : "Upstream error";
+        return NextResponse.json({ error: msg }, { status: 502 });
     }
 }

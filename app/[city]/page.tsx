@@ -56,8 +56,8 @@ export default function CityPage() {
                 {loading && (
                     <>
                         <SkeletonBlock h={120}/>
-                        <SkeletonBlock h={140} mt={5}/>
-                        <SkeletonBlock h={220} mt={5}/>
+                        <SkeletonBlock h={140} mt={20}/>
+                        <SkeletonBlock h={220} mt={20}/>
                     </>
                 )}
 

@@ -18,7 +18,8 @@ export async function GET(req: Request) {
     return NextResponse.json(results, {
         headers: { "Cache-Control": `public, s-maxage=${revalidate}, stale-while-revalidate=600` },
     });
-    } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "Geocode failed" }, { status: 502 });
+    } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : "Geocode failed";
+        return NextResponse.json({ error: msg }, { status: 502 });
     }
 }

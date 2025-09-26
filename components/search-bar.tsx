@@ -54,6 +54,7 @@ export default function SearchBar({ onSelect }: { onSelect?: (c: GeoResult) => v
                 if(!cancelled) setResults(results);
             } catch (error) {
                 if(!cancelled) setError("Search failed. Please try again.");
+                console.log(error);
             } finally {
                 if(!cancelled) setLoading(false);
             }

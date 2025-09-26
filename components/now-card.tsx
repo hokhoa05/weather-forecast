@@ -2,6 +2,7 @@
 
 import { Current } from "@/lib/definitions";
 import { formatTemp, formatTime, formatWind, Units } from "@/lib/format";
+import Image from "next/image";
 
 export default function NowCard({cur, units, tz}: {
     cur: Current;
@@ -10,9 +11,11 @@ export default function NowCard({cur, units, tz}: {
 }) {
     return (
         <div className="rounded-2xl border bg-white p-5 shadow-sm">
-            <img
+            <Image
                 src={`/weather/${cur.icon}.svg`}
                 alt={cur.summary}
+                width={48}
+                height={48}
                 className="h-12 w-12"
             />
             <div className="flex items-baseline gap-3">
