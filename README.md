@@ -1,5 +1,5 @@
 # 🌦️ Weather Forecast Web App
-A modern weather forecast website built with Next.js 14 (App Router), TypeScript, and TailwindCSS.
+A modern weather forecast website built with Next.js 15 (App Router), TypeScript, and TailwindCSS.
 It provides city search with geocoding, a current/hourly/daily forecast, and a clean responsive UI.
 
 ## Features
