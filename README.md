@@ -1,5 +1,5 @@
 # 🌦️ Weather Forecast Web App
-A modern weather forecast website built with Next.js 14 (App Router), TypeScript, and TailwindCSS.
+A modern weather forecast website built with Next.js 15 (App Router), TypeScript, and TailwindCSS.
 It provides city search with geocoding, a current/hourly/daily forecast, and a clean responsive UI.
 
 ## Features
@@ -37,3 +37,6 @@ Next.js 15 (App router, Edge API Routes), TypeScript, TailwindCSS, React.
 ## Weather Icons
 
 The weather icons in this project are from this repository [basmilius/weather-icons](https://github.com/basmilius/weather-icons) of [basmilius](https://github.com/basmilius).
+
+## Roadmap Project
+https://roadmap.sh/projects/weather-api-wrapper-service
