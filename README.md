@@ -34,6 +34,9 @@ pnpm dev
 ## Tech stack
 Next.js 15 (App router, Edge API Routes), TypeScript, TailwindCSS, React.
 
+## Deployment
+https://weather-forecast-unoc.vercel.app/
+
 ## Weather Icons
 
 The weather icons in this project are from this repository [basmilius/weather-icons](https://github.com/basmilius/weather-icons) of [basmilius](https://github.com/basmilius).
